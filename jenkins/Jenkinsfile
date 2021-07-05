@@ -4,6 +4,43 @@ pipeline {
             image 'maven:3-alpine'
             args '-v /root/.m2:/root/.m2'
         }
+def myLib = library(identifier: 'JenkinsSharedLib@develop', retriever: modernSCM
+    (
+        [
+            $class: 'GitSCMSource',
+            remote: 'https://github.com/bibhashp/JenkinsSharedLib.git',
+            credentialsId: 'BITBUCKET_CRED'
+        ]
+    ))
+
+properties([
+    parameters([
+        string(name: 'paramBuildList', defaultValue: "[['Task1', 'Task2', 'Task3'],['Second1', 'Second2', 'Second3'],['Third1'],['Last1', 'Last2', 'Last3']]")
+    ])
+])
+
+def build_list = Eval.me(paramBuildList)
+def function_list = ['scmcheckout', 'buildpackage', 'uploadartifact', 'notification', 'extended_function']
+
+for(int i=0; i < build_list.size(); i++) {
+
+	taskList = build_list[i]
+	def running_set = [failFast: true]
+	
+	for(int j=0; j < taskList.size(); j++){
+		ifunctionIndex = i
+		if ( i >= function_list.size()){
+		  ifunctionIndex = function_list.size() -1
+		}
+		running_set["${taskList[j]}"] = { "${function_list[ifunctionIndex]}"() }
+	}
+	print(running_set)
+	print("\n")
+	
+	stage("Stage ${i}"){
+		parallel(running_set)
+	}
+}
     }
     stages {
         stage('Build') {
