@@ -2,63 +2,70 @@ pipeline {
     agent any
 
     stages {
-        stage('Parallel Tasks') {
+        stage('Initial Setup') {
+            steps {
+                echo 'Running initial setup'
+                // Add initial setup commands here
+            }
+        }
+
+        stage('Parallel Tasks with Sequential Steps') {
             parallel {
-                stage('Task A') {
-                    steps {
-                        echo 'Running Task A'
-                        // Add your task commands here
+                stage('Branch 1') {
+                    stages {
+                        stage('Task 1.1') {
+                            steps {
+                                echo 'Running Task 1.1'
+                                // Add your Task 1.1 commands here
+                            }
+                        }
+                        stage('Task 1.2') {
+                            steps {
+                                echo 'Running Task 1.2'
+                                // Add your Task 1.2 commands here
+                            }
+                        }
                     }
                 }
-                stage('Task B') {
-                    steps {
-                        echo 'Running Task B'
-                        // Add your task commands here
+                stage('Branch 2') {
+                    stages {
+                        stage('Task 2.1') {
+                            steps {
+                                echo 'Running Task 2.1'
+                                // Add your Task 2.1 commands here
+                            }
+                        }
+                        stage('Task 2.2') {
+                            steps {
+                                echo 'Running Task 2.2'
+                                // Add your Task 2.2 commands here
+                            }
+                        }
                     }
                 }
-                stage('Task C') {
-                    steps {
-                        echo 'Running Task C'
-                        // Add your task commands here
+                stage('Branch 3') {
+                    stages {
+                        stage('Task 3.1') {
+                            steps {
+                                echo 'Running Task 3.1'
+                                // Add your Task 3.1 commands here
+                            }
+                        }
+                        stage('Task 3.2') {
+                            steps {
+                                echo 'Running Task 3.2'
+                                // Add your Task 3.2 commands here
+                            }
+                        }
                     }
                 }
             }
         }
 
-        stage('Parallel Sequence') {
-            parallel {
-                stage('Sequence 1') {
-                    stages {
-                        stage('Step 1.1') {
-                            steps {
-                                echo 'Running Step 1.1'
-                                // Add your task commands here
-                            }
-                        }
-                        stage('Step 1.2') {
-                            steps {
-                                echo 'Running Step 1.2'
-                                // Add your task commands here
-                            }
-                        }
-                    }
-                }
-                stage('Sequence 2') {
-                    stages {
-                        stage('Step 2.1') {
-                            steps {
-                                echo 'Running Step 2.1'
-                                // Add your task commands here
-                            }
-                        }
-                        stage('Step 2.2') {
-                            steps {
-                                echo 'Running Step 2.2'
-                                // Add your task commands here
-                            }
-                        }
-                    }
-                }
+        stage('Final Stage') {
+            steps {
+                echo 'Running final stage'
+                // Add final stage commands here
             }
         }
     }
