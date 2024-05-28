@@ -11,50 +11,50 @@ pipeline {
 
         stage('Parallel Tasks with Sequential Steps') {
             parallel {
-                stage('Branch 1') {
+                stage('Build and Test') {
                     stages {
-                        stage('Task 1.1') {
+                        stage('Build') {
                             steps {
-                                echo 'Running Task 1.1'
-                                // Add your Task 1.1 commands here
+                                echo 'Running Build'
+                                // Add your Build commands here
                             }
                         }
-                        stage('Task 1.2') {
+                        stage('Unit Test') {
                             steps {
-                                echo 'Running Task 1.2'
-                                // Add your Task 1.2 commands here
+                                echo 'Running Unit Test'
+                                // Add your Unit Test commands here
                             }
                         }
                     }
                 }
-                stage('Branch 2') {
+                stage('Integration and Deploy') {
                     stages {
-                        stage('Task 2.1') {
+                        stage('Integration Test') {
                             steps {
-                                echo 'Running Task 2.1'
-                                // Add your Task 2.1 commands here
+                                echo 'Running Integration Test'
+                                // Add your Integration Test commands here
                             }
                         }
-                        stage('Task 2.2') {
+                        stage('Deploy') {
                             steps {
-                                echo 'Running Task 2.2'
-                                // Add your Task 2.2 commands here
+                                echo 'Running Deploy'
+                                // Add your Deploy commands here
                             }
                         }
                     }
                 }
-                stage('Branch 3') {
+                stage('Code Analysis') {
                     stages {
-                        stage('Task 3.1') {
+                        stage('Static Analysis') {
                             steps {
-                                echo 'Running Task 3.1'
-                                // Add your Task 3.1 commands here
+                                echo 'Running Static Analysis'
+                                // Add your Static Analysis commands here
                             }
                         }
-                        stage('Task 3.2') {
+                        stage('Dynamic Analysis') {
                             steps {
-                                echo 'Running Task 3.2'
-                                // Add your Task 3.2 commands here
+                                echo 'Running Dynamic Analysis'
+                                // Add your Dynamic Analysis commands here
                             }
                         }
                     }
