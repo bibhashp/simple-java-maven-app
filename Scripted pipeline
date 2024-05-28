@@ -1,0 +1,46 @@
+node {
+    stage('Initial Setup') {
+        echo 'Running initial setup'
+        // Add initial setup commands here
+    }
+
+    stage('Parallel Tasks with Sequential Steps') {
+        parallel(
+            'Build and Test': {
+                stage('Build') {
+                    echo 'Running Build'
+                    // Add your Build commands here
+                }
+                stage('Unit Test') {
+                    echo 'Running Unit Test'
+                    // Add your Unit Test commands here
+                }
+            },
+            'Integration and Deploy': {
+                stage('Integration Test') {
+                    echo 'Running Integration Test'
+                    // Add your Integration Test commands here
+                }
+                stage('Deploy') {
+                    echo 'Running Deploy'
+                    // Add your Deploy commands here
+                }
+            },
+            'Code Analysis': {
+                stage('Static Analysis') {
+                    echo 'Running Static Analysis'
+                    // Add your Static Analysis commands here
+                }
+                stage('Dynamic Analysis') {
+                    echo 'Running Dynamic Analysis'
+                    // Add your Dynamic Analysis commands here
+                }
+            }
+        )
+    }
+
+    stage('Final Stage') {
+        echo 'Running final stage'
+        // Add final stage commands here
+    }
+}
