@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Parallel Tasks') {
+            parallel {
+                stage('Task A') {
+                    steps {
+                        echo 'Running Task A'
+                        // Add your task commands here
+                    }
+                }
+                stage('Task B') {
+                    steps {
+                        echo 'Running Task B'
+                        // Add your task commands here
+                    }
+                }
+                stage('Task C') {
+                    steps {
+                        echo 'Running Task C'
+                        // Add your task commands here
+                    }
+                }
+            }
+        }
+
+        stage('Parallel Sequence') {
+            parallel {
+                stage('Sequence 1') {
+                    stages {
+                        stage('Step 1.1') {
+                            steps {
+                                echo 'Running Step 1.1'
+                                // Add your task commands here
+                            }
+                        }
+                        stage('Step 1.2') {
+                            steps {
+                                echo 'Running Step 1.2'
+                                // Add your task commands here
+                            }
+                        }
+                    }
+                }
+                stage('Sequence 2') {
+                    stages {
+                        stage('Step 2.1') {
+                            steps {
+                                echo 'Running Step 2.1'
+                                // Add your task commands here
+                            }
+                        }
+                        stage('Step 2.2') {
+                            steps {
+                                echo 'Running Step 2.2'
+                                // Add your task commands here
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
