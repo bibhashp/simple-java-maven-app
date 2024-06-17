@@ -1,0 +1,134 @@
+# forms.py
+from django import forms
+
+class DateRangeForm(forms.Form):
+    date_type = forms.ChoiceField(
+        choices=[('single', 'Single Date'), ('range', 'Date Range')],
+        widget=forms.RadioSelect,
+        required=True
+    )
+    single_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        required=False
+    )
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        required=False
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        required=False
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        date_type = cleaned_data.get('date_type')
+        single_date = cleaned_data.get('single_date')
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+
+        if date_type == 'single' and not single_date:
+            self.add_error('single_date', 'This field is required.')
+        elif date_type == 'range':
+            if not start_date:
+                self.add_error('start_date', 'This field is required.')
+            if not end_date:
+                self.add_error('end_date', 'This field is required.')
+            if start_date and end_date and start_date > end_date:
+                self.add_error('end_date', 'End date must be after start date.')
+
+
+
+#--------------------------
+
+# views.py
+from django.shortcuts import render
+from .forms import DateRangeForm
+
+def date_range_view(request):
+    form = DateRangeForm()
+    if request.method == 'POST':
+        form = DateRangeForm(request.POST)
+        if form.is_valid():
+            # Handle form submission
+            # Extract data based on date_type
+            date_type = form.cleaned_data['date_type']
+            if date_type == 'single':
+                single_date = form.cleaned_data['single_date']
+                # Process single_date
+            elif date_type == 'range':
+                start_date = form.cleaned_data['start_date']
+                end_date = form.cleaned_data['end_date']
+                # Process start_date and end_date
+            # Add your logic here
+    return render(request, 'date_range_template.html', {'form': form})
+
+
+
+#---------------------
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Range Selector</title>
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+</head>
+<body>
+    <h1>Select Date</h1>
+    <form id="date-range-form" method="post" hx-post="{% url 'date_range_view' %}" hx-target="#result" hx-swap="outerHTML">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        document.addEventListener('change', function (event) {
+            if (event.target.name === 'date_type') {
+                let singleDateField = document.querySelector('input[name="single_date"]').closest('p');
+                let startDateField = document.querySelector('input[name="start_date"]').closest('p');
+                let endDateField = document.querySelector('input[name="end_date"]').closest('p');
+                if (event.target.value === 'single') {
+                    singleDateField.style.display = '';
+                    startDateField.style.display = 'none';
+                    endDateField.style.display = 'none';
+                } else {
+                    singleDateField.style.display = 'none';
+                    startDateField.style.display = '';
+                    endDateField.style.display = '';
+                }
+            }
+        });
+
+        // Initial field display setup
+        document.addEventListener('DOMContentLoaded', function () {
+            let dateType = document.querySelector('input[name="date_type"]:checked').value;
+            let singleDateField = document.querySelector('input[name="single_date"]').closest('p');
+            let startDateField = document.querySelector('input[name="start_date"]').closest('p');
+            let endDateField = document.querySelector('input[name="end_date"]').closest('p');
+            if (dateType === 'single') {
+                singleDateField.style.display = '';
+                startDateField.style.display = 'none';
+                endDateField.style.display = 'none';
+            } else {
+                singleDateField.style.display = 'none';
+                startDateField.style.display = '';
+                endDateField.style.display = '';
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+#------------------------------
+
+
+# urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('date-range/', views.date_range_view, name='date_range_view'),
+]
