@@ -237,3 +237,54 @@ def date_range_view(request):
     </script>
 </body>
 </html>
+
+
+
+#################
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Range Selector</title>
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+</head>
+<body>
+    <h1>Select Date</h1>
+    <form id="date-range-form" method="post" hx-post="{% url 'date_range_view' %}" hx-target="#result" hx-swap="outerHTML">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        document.addEventListener('change', function (event) {
+            if (event.target.name === 'date_type') {
+                updateDateFields(event.target.value);
+            }
+        });
+
+        // Initial field display setup
+        document.addEventListener('DOMContentLoaded', function () {
+            let dateType = document.querySelector('input[name="date_type"]:checked').value;
+            updateDateFields(dateType);
+        });
+
+        function updateDateFields(dateType) {
+            let endDateField = document.querySelector('input[name="end_date"]');
+            if (dateType === 'single') {
+                endDateField.closest('p').style.display = 'none';
+                endDateField.value = '';
+                endDateField.required = false;
+            } else {
+                endDateField.closest('p').style.display = '';
+                endDateField.required = true;
+            }
+        }
+    </script>
+</body>
+</html>
+
