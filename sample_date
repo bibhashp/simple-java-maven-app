@@ -342,3 +342,72 @@ def date_range_view(request):
 </body>
 </html>
 
+
+
+#####################3
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Range Selector</title>
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+    <style>
+        .hidden {
+            display: none;
+        }
+        .date-range-container {
+            display: flex;
+            align-items: center;
+        }
+        .date-range-container label {
+            margin-right: 10px;
+        }
+        .date-range-container input {
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Date</h1>
+    <form id="date-range-form" method="post" hx-post="{% url 'date_range_view' %}" hx-target="#result" hx-swap="outerHTML">
+        {% csrf_token %}
+        <div class="date-range-container">
+            <label for="start_date">From:</label>
+            <input type="date" id="start_date" name="start_date" required>
+            <label for="end_date" id="end_date_label" class="hidden">To:</label>
+            <input type="date" id="end_date" name="end_date" class="hidden">
+        </div>
+        <button type="button" onclick="toggleDateRange()">Toggle Date Range</button>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        function toggleDateRange() {
+            let endDateLabel = document.getElementById('end_date_label');
+            let endDateField = document.getElementById('end_date');
+            if (endDateField.classList.contains('hidden')) {
+                endDateField.classList.remove('hidden');
+                endDateLabel.classList.remove('hidden');
+                endDateField.required = true;
+            } else {
+                endDateField.classList.add('hidden');
+                endDateLabel.classList.add('hidden');
+                endDateField.value = '';
+                endDateField.required = false;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let endDateLabel = document.getElementById('end_date_label');
+            let endDateField = document.getElementById('end_date');
+            endDateField.classList.add('hidden');
+            endDateLabel.classList.add('hidden');
+            endDateField.required = false;
+        });
+    </script>
+</body>
+</html>
+
