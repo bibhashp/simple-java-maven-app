@@ -132,3 +132,108 @@ from . import views
 urlpatterns = [
     path('date-range/', views.date_range_view, name='date_range_view'),
 ]
+
+
+
+
+
+
+
+
+#############
+
+
+# forms.py
+from django import forms
+
+class DateRangeForm(forms.Form):
+    date_type = forms.ChoiceField(
+        choices=[('single', 'Single Date'), ('range', 'Date Range')],
+        widget=forms.RadioSelect,
+        initial='single',
+        required=True
+    )
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        required=True
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        required=False
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        date_type = cleaned_data.get('date_type')
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+
+        if date_type == 'range' and not end_date:
+            self.add_error('end_date', 'This field is required.')
+        if date_type == 'range' and start_date and end_date and start_date > end_date:
+            self.add_error('end_date', 'End date must be after start date.')
+
+
+
+
+# views.py
+from django.shortcuts import render
+from .forms import DateRangeForm
+
+def date_range_view(request):
+    form = DateRangeForm()
+    if request.method == 'POST':
+        form = DateRangeForm(request.POST)
+        if form.is_valid():
+            # Handle form submission
+            date_type = form.cleaned_data['date_type']
+            start_date = form.cleaned_data['start_date']
+            end_date = form.cleaned_data['end_date'] if date_type == 'range' else None
+            # Process dates as needed
+    return render(request, 'date_range_template.html', {'form': form})
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Range Selector</title>
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+</head>
+<body>
+    <h1>Select Date</h1>
+    <form id="date-range-form" method="post" hx-post="{% url 'date_range_view' %}" hx-target="#result" hx-swap="outerHTML">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        document.addEventListener('change', function (event) {
+            if (event.target.name === 'date_type') {
+                let endDateField = document.querySelector('input[name="end_date"]').closest('p');
+                if (event.target.value === 'single') {
+                    endDateField.style.display = 'none';
+                    document.querySelector('input[name="end_date"]').value = '';
+                } else {
+                    endDateField.style.display = '';
+                }
+            }
+        });
+
+        // Initial field display setup
+        document.addEventListener('DOMContentLoaded', function () {
+            let dateType = document.querySelector('input[name="date_type"]:checked').value;
+            let endDateField = document.querySelector('input[name="end_date"]').closest('p');
+            if (dateType === 'single') {
+                endDateField.style.display = 'none';
+            } else {
+                endDateField.style.display = '';
+            }
+        });
+    </script>
+</body>
+</html>
