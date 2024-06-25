@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TreeTable</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        tr.hidden {
+            display: none;
+        }
+        .expand-collapse {
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.expand-collapse').forEach(function(el) {
+                el.addEventListener('click', function() {
+                    let rowId = el.closest('tr').dataset.id;
+                    let childRows = document.querySelectorAll(`tr[data-parent-id='${rowId}']`);
+                    childRows.forEach(function(childRow) {
+                        childRow.classList.toggle('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- TreeTable HTML will be inserted here -->
+            {{ treetable_html | safe }}
+        </tbody>
+    </table>
+</body>
+</html>
+
+
+
+
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    json_data = {
+        "id": 1,
+        "name": "Parent",
+        "children": [
+            {
+                "id": 2,
+                "name": "Child 1",
+                "children": [
+                    {"id": 3, "name": "Grandchild 1", "children": []},
+                    {"id": 4, "name": "Grandchild 2", "children": []}
+                ]
+            },
+            {
+                "id": 5,
+                "name": "Child 2",
+                "children": []
+            }
+        ]
+    }
+    
+    def json_to_treetable(data, parent_id=""):
+        html = ""
+        if isinstance(data, dict):
+            for key, value in data.items():
+                row_id = f"{parent_id}-{key}" if parent_id else key
+                html += f"<tr data-id='{row_id}' data-parent-id='{parent_id}'>"
+                html += f"<td><span class='expand-collapse'>{key}</span></td><td>{'dict' if isinstance(value, (dict, list)) else value}</td>"
+                html += "</tr>"
+                if isinstance(value, dict) or isinstance(value, list):
+                    html += json_to_treetable(value, row_id)
+        elif isinstance(data, list):
+            for index, item in enumerate(data):
+                row_id = f"{parent_id}-{index}" if parent_id else str(index)
+                html += f"<tr data-id='{row_id}' data-parent-id='{parent_id}'>"
+                html += f"<td><span class='expand-collapse'>Item {index}</span></td><td>{'dict' if isinstance(item, (dict, list)) else item}</td>"
+                html += "</tr>"
+                if isinstance(item, dict) or isinstance(item, list):
+                    html += json_to_treetable(item, row_id)
+        return html
+    
+    treetable_html = json_to_treetable(json_data)
+    
+    return render_template_string('''
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>TreeTable</title>
+        <style>
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid #ccc;
+                padding: 8px;
+                text-align: left;
+            }
+            tr.hidden {
+                display: none;
+            }
+            .expand-collapse {
+                cursor: pointer;
+            }
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.expand-collapse').forEach(function(el) {
+                    el.addEventListener('click', function() {
+                        let rowId = el.closest('tr').dataset.id;
+                        let childRows = document.querySelectorAll(`tr[data-parent-id='${rowId}']`);
+                        childRows.forEach(function(childRow) {
+                            childRow.classList.toggle('hidden');
+                        });
+                    });
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- TreeTable HTML will be inserted here -->
+                {{ treetable_html | safe }}
+            </tbody>
+        </table>
+    </body>
+    </html>
+    ''', treetable_html=treetable_html)
+
+if __name__ == '__main__':
+    app.run(debug=True)
