@@ -1,0 +1,191 @@
+
+"<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Table Example</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .tree-table .level-1 {
+            padding-left: 20px;
+        }
+
+        .tree-table .level-2 {
+            padding-left: 40px;
+        }
+
+        .tree-table .level-3 {
+            padding-left: 60px;
+        }
+
+        .tree-table .level-4 {
+            padding-left: 80px;
+        }
+
+        .toggle-button {
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+    <script>
+        function toggleChildren(parentId) {
+            var children = document.querySelectorAll('.child-of-' + parentId);
+            children.forEach(function(child) {
+                if (child.classList.contains('hidden')) {
+                    child.classList.remove('hidden');
+                } else {
+                    child.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <table class="table table-bordered tree-table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Key</th>
+                    <th>TYPE</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <button class="btn btn-link p-0 toggle-button" onclick="toggleChildren('AvailableLibraries')">+</button>
+                        AvailableLibraries
+                    </td>
+                    <td>Array</td>
+                    <td>(8 Items)</td>
+                </tr>
+                <tr class="child-of-AvailableLibraries hidden level-1">
+                    <td>
+                        <button class="btn btn-link p-0 toggle-button" onclick="toggleChildren('AvailableLibraries-0')">+</button>
+                        0
+                    </td>
+                    <td>Dict</td>
+                    <td></td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-0 hidden level-2">
+                    <td class="level-3">SupportedPlatform</td>
+                    <td>String</td>
+                    <td>tvos</td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-0 hidden level-2">
+                    <td class="level-3">DebugSymbolsPath</td>
+                    <td>String</td>
+                    <td>dSYMs</td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-0 hidden level-2">
+                    <td>
+                        <button class="btn btn-link p-0 toggle-button" onclick="toggleChildren('SupportedArchitectures-0')">+</button>
+                        <span class="level-3">SupportedArchitectures</span>
+                    </td>
+                    <td>Array</td>
+                    <td>(1 Item)</td>
+                </tr>
+                <tr class="child-of-SupportedArchitectures-0 hidden level-3">
+                    <td class="level-4">0</td>
+                    <td>String</td>
+                    <td>arm64</td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-0 hidden level-2">
+                    <td class="level-3">BitcodeSymbolMapsPath</td>
+                    <td>String</td>
+                    <td>BCSymbolMaps</td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-0 hidden level-2">
+                    <td class="level-3">LibraryPath</td>
+                    <td>String</td>
+                    <td>Universal.framework</td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-0 hidden level-2">
+                    <td class="level-3">LibraryIdentifier</td>
+                    <td>String</td>
+                    <td>tvos-arm64</td>
+                </tr>
+
+                <!-- Repeated Structure for Each Dict in Array -->
+
+                <tr class="child-of-AvailableLibraries hidden level-1">
+                    <td>
+                        <button class="btn btn-link p-0 toggle-button" onclick="toggleChildren('AvailableLibraries-1')">+</button>
+                        1
+                    </td>
+                    <td>Dict</td>
+                    <td></td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-1 hidden level-2">
+                    <td class="level-3">SupportedPlatform</td>
+                    <td>String</td>
+                    <td>tvos</td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-1 hidden level-2">
+                    <td class="level-3">DebugSymbolsPath</td>
+                    <td>String</td>
+                    <td>dSYMs</td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-1 hidden level-2">
+                    <td class="level-3">SupportedPlatformVariant</td>
+                    <td>String</td>
+                    <td>simulator</td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-1 hidden level-2">
+                    <td>
+                        <button class="btn btn-link p-0 toggle-button" onclick="toggleChildren('SupportedArchitectures-1')">+</button>
+                        <span class="level-3">SupportedArchitectures</span>
+                    </td>
+                    <td>Array</td>
+                    <td>(2 Items)</td>
+                </tr>
+                <tr class="child-of-SupportedArchitectures-1 hidden level-3">
+                    <td class="level-4">0</td>
+                    <td>String</td>
+                    <td>arm64</td>
+                </tr>
+                <tr class="child-of-SupportedArchitectures-1 hidden level-3">
+                    <td class="level-4">1</td>
+                    <td>String</td>
+                    <td>x86_64</td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-1 hidden level-2">
+                    <td class="level-3">LibraryPath</td>
+                    <td>String</td>
+                    <td>Universal.framework</td>
+                </tr>
+                <tr class="child-of-AvailableLibraries-1 hidden level-2">
+                    <td class="level-3">LibraryIdentifier</td>
+                    <td>String</td>
+                    <td>tvos-arm64_x86_64-simulator</td>
+                </tr>
+
+                <!-- Repeated Structure for Remaining Dicts in Array -->
+
+                <tr>
+                    <td>CFBundlePackageType</td>
+                    <td>String</td>
+                    <td>XFWK</td>
+                </tr>
+                <tr>
+                    <td>XCFrameworkFormatVersion</td>
+                    <td>String</td>
+                    <td>1.0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+"
+
+Input:
+: {"CBundle.plist": {"AvailableLibraries": [{"DebugSymbolsPath": "dSYMs", "LibraryIdentifier": "ios-arm64_x86_64-maccatalyst", "LibraryPath": "dumb.framework", "SupportedArchitectures": ["arm64", "x86_64"], "SupportedPlatform": "ios", "SupportedPlatformVariant": "maccatalyst"}, {"DebugSymbolsPath": "dSYMs", "LibraryIdentifier": "ios-arm64", "LibraryPath": "dumb.framework", "SupportedArchitectures": ["arm64"], "SupportedPlatform": "ios"}, {"DebugSymbolsPath": "dSYMs", "LibraryIdentifier": "ios-arm64_x86_64-simulator", "LibraryPath": "dumb.framework", "SupportedArchitectures": ["arm64", "x86_64"], "SupportedPlatform": "ios", "SupportedPlatformVariant": "simulator"}, {"DebugSymbolsPath": "dSYMs", "LibraryIdentifier": "macos-arm64_x86_64", "LibraryPath": "dumb.framework", "SupportedArchitectures": ["arm64", "x86_64"], "SupportedPlatform": "macos"}], "CFBundlePackageType": "XFWK", "XCFrameworkFormatVersion": "1.0"}}
