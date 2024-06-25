@@ -1,0 +1,199 @@
+import json
+
+# Sample JSON data
+data = {
+    "CBundle.plist": {
+        "AvailableLibraries": [
+            {
+                "DebugSymbolsPath": "dSYMs",
+                "LibraryIdentifier": "ios-arm64_x86_64-maccatalyst",
+                "LibraryPath": "dumb.framework",
+                "SupportedArchitectures": [
+                    "arm64",
+                    "x86_64"
+                ],
+                "SupportedPlatform": "ios",
+                "SupportedPlatformVariant": "maccatalyst"
+            }
+        ],
+        "CFBundlePackageType": "XFWK",
+        "XCFrameworkFormatVersion": "1.0"
+    }
+}
+
+
+def generate_html(data):
+    html = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Table Example</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .tree-table .level-1 { padding-left: 20px; }
+        .tree-table .level-2 { padding-left: 40px; }
+        .tree-table .level-3 { padding-left: 60px; }
+        .tree-table .level-4 { padding-left: 80px; }
+        .tree-table .level-5 { padding-left: 100px; }
+        .toggle-button { cursor: pointer; }
+        .hidden { display: none; }
+    </style>
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+    <script>
+        function toggleChildren(parentId) {
+            var children = document.querySelectorAll('.child-of-' + parentId);
+            var parentElement = document.getElementById(parentId);
+            var isExpanding = parentElement.getAttribute('data-expanded') === 'false';
+
+            children.forEach(function (child) {
+                if (isExpanding) {
+                    child.classList.remove('hidden');
+                } else {
+                    child.classList.add('hidden');
+                    collapseAllDescendants(child.id);
+                }
+            });
+
+            parentElement.setAttribute('data-expanded', isExpanding);
+        }
+
+        function collapseAllDescendants(elementId) {
+            var descendants = document.querySelectorAll('.child-of-' + elementId);
+            descendants.forEach(function (descendant) {
+                descendant.classList.add('hidden');
+                collapseAllDescendants(descendant.id);
+            });
+        }
+
+        // Collapse all elements on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            var elementsToCollapse = document.querySelectorAll('.tree-table tbody tr');
+            elementsToCollapse.forEach(function(element) {
+                if (element.id !== 'CBundle') {  // Exclude root element from collapsing
+                    element.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <table class="table table-bordered tree-table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Key</th>
+                    <th>TYPE</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+'''
+
+    def add_dict_to_html(d, parent_id='', level=0):
+        nonlocal html
+        for key, value in d.items():
+            level_class = f'level-{level + 1}'
+            if isinstance(value, dict):
+                html += f'''
+                    <tr id="{key}" class="child-of-{parent_id} {level_class}">
+                        <td>
+                            <button class="btn btn-link p-0 toggle-button" onclick="toggleChildren('{key}')">+</button>
+                            {key}
+                        </td>
+                        <td>Dict</td>
+                        <td>({len(value)} Items)</td>
+                    </tr>
+                '''
+                add_dict_to_html(value, key, level + 1)
+            elif isinstance(value, list):
+                html += f'''
+                    <tr id="{key}" class="child-of-{parent_id} {level_class}">
+                        <td>
+                            <button class="btn btn-link p-0 toggle-button" onclick="toggleChildren('{key}')">+</button>
+                            {key}
+                        </td>
+                        <td>Array</td>
+                        <td>({len(value)} Items)</td>
+                    </tr>
+                '''
+                add_list_to_html(value, key, level + 1)
+            else:
+                html += f'''
+                    <tr id="{key}" class="child-of-{parent_id} {level_class}">
+                        <td class="{level_class}">{key}</td>
+                        <td>{type(value).__name__}</td>
+                        <td>{value}</td>
+                    </tr>
+                '''
+
+    def add_list_to_html(lst, parent_id='', level=0):
+        nonlocal html
+        for i, item in enumerate(lst):
+            item_id = f'{parent_id}-{i}'
+            level_class = f'level-{level + 1}'
+            if isinstance(item, dict):
+                html += f'''
+                    <tr id="{item_id}" class="child-of-{parent_id} {level_class}">
+                        <td>
+                            <button class="btn btn-link p-0 toggle-button" onclick="toggleChildren('{item_id}')">+</button>
+                            {i}
+                        </td>
+                        <td>Dict</td>
+                        <td>({len(item)} Items)</td>
+                    </tr>
+                '''
+                add_dict_to_html(item, item_id, level + 1)
+            elif isinstance(item, list):
+                html += f'''
+                    <tr id="{item_id}" class="child-of-{parent_id} {level_class}">
+                        <td>
+                            <button class="btn btn-link p-0 toggle-button" onclick="toggleChildren('{item_id}')">+</button>
+                            {i}
+                        </td>
+                        <td>Array</td>
+                        <td>({len(item)} Items)</td>
+                    </tr>
+                '''
+                add_list_to_html(item, item_id, level + 1)
+            else:
+                html += f'''
+                    <tr id="{item_id}" class="child-of-{parent_id} {level_class}">
+                        <td class="{level_class}">{parent_id}</td>
+                        <td>{type(item).__name__}</td>
+                        <td>{item}</td>
+                    </tr>
+                '''
+
+    # Add the root element "CBundle.plist" directly to HTML without the hidden class
+    html += f'''
+        <tr id="CBundle" data-expanded="true">
+            <td>
+                <button class="btn btn-link p-0 toggle-button" onclick="toggleChildren('CBundle')">+</button>
+                CBundle.plist
+            </td>
+            <td>Dict</td>
+            <td>(3 Items)</td>
+        </tr>
+    '''
+
+    add_dict_to_html(data["CBundle.plist"], 'CBundle', 0)
+
+    html += '''
+            </tbody>
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+'''
+    return html
+
+
+html_output = generate_html(data)
+with open('tree_table.html', 'w') as file:
+    file.write(html_output)
+print("HTML file generated successfully.")
