@@ -42,3 +42,84 @@
     </script>
 </body>
 </html>
+
+
+-------
+
+
+<!-- tree_view.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tree View Example</title>
+    <style>
+        /* Add your custom CSS styles here */
+        .tree-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tree-table th, .tree-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .tree-table .tree-table-space-block {
+            display: inline-block;
+            width: 20px; /* Adjust as needed */
+        }
+        .tree-table .last-block {
+            display: inline-block;
+            width: 20px; /* Adjust as needed */
+            border: none; /* Remove border for the last block */
+        }
+        .tree-table .btn-toggle {
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        .show {
+            display: table-row;
+        }
+    </style>
+</head>
+<body>
+    <table id="table-tree" class="tree-table">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Type</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <!-- Include jQuery (required for the script) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include your JavaScript file -->
+    <script src="http://localhost:8000/static/dan.js"></script>
+
+    <script>
+        // Define the items array from Django context or directly here
+        var items = [
+            {% for item in items %}
+            {
+                'id': {{ item.id }},
+                {% if item.parentId %}
+                'parentId': {{ item.parentId }},
+                {% endif %}
+                'key': '{{ item.key }}',
+                'TYPE': '{{ item.TYPE }}',
+                'Value': '{{ item.Value }}'
+            }
+            {% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+    </script>
+</body>
+</html>
+
+
