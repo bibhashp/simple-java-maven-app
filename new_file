@@ -85,3 +85,35 @@
 
 
 
+-----
+
+
+
+        function resetContentAndEvents() {
+            // Clear the content area before loading new content
+            $('#content').empty();
+
+            // Remove existing HTMX event listeners if any
+            document.body.removeEventListener('htmx:afterOnLoad', handleHTMXLoad);
+
+            // Clear any other jQuery events on content if necessary
+            $('#content').off();
+        }
+
+        function handleHTMXLoad(event) {
+            console.log("HTMX content loaded");
+            // Add any code to handle the newly loaded content here
+        }
+
+        // Initialize HTMX event listeners
+        document.body.addEventListener('htmx:afterOnLoad', handleHTMXLoad);
+
+        // Reset content and events before each HTMX request
+        document.body.addEventListener('htmx:beforeRequest', resetContentAndEvents);
+
+        $(document).ready(function() {
+            console.log("Document ready");
+            // Add any jQuery-related code here
+        });
+
+
