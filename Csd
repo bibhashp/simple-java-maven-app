@@ -1,3 +1,74 @@
+
+// Function to toggle the theme and send a message to the iframe
+function toggleTheme(theme) {
+  const iframe = document.querySelector('iframe'); // Select your iframe
+  iframe.contentWindow.postMessage({ theme: theme }, '*');
+}
+
+// Function to apply the theme
+function applyTheme(theme) {
+  document.documentElement.setAttribute('themed', theme);
+  const messageBox = document.getElementById('message-box');
+  messageBox.textContent = `Current Theme: ${theme.charAt(0).toUpperCase() + theme.slice(1)}`;
+  toggleTheme(theme);
+}
+
+// Event listener for the theme toggle button
+document.getElementById('theme-toggle-button').addEventListener('click', () => {
+  const currentTheme = document.documentElement.getAttribute('themed');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  applyTheme(newTheme);
+});
+
+// Initialize the theme on page load
+document.addEventListener('DOMContentLoaded', () => {
+  const initialTheme = document.documentElement.getAttribute('themed') || 'light';
+  applyTheme(initialTheme);
+});
+
+
+// Function to apply the theme
+function applyTheme(theme) {
+  document.documentElement.setAttribute('themed', theme);
+}
+
+// Listen for theme change messages from the parent page
+window.addEventListener('message', (event) => {
+  if (event.data.theme) {
+    applyTheme(event.data.theme);
+  }
+});
+
+// Initialize the theme on iframe load
+document.addEventListener('DOMContentLoaded', () => {
+  const parentTheme = window.parent.document.documentElement.getAttribute('themed') || 'light';
+  applyTheme(parentTheme);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Function to toggle the theme and send a message to the iframe
 function toggleTheme(theme) {
   const iframe = document.querySelector('iframe'); // Select your iframe
