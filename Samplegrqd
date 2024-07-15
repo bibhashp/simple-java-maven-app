@@ -1,0 +1,11 @@
+subprojects {
+    afterEvaluate { project ->
+        def kaptDebugTask = project.tasks.findByName("kaptDebugKotlin")
+        def kaptReleaseTask = project.tasks.findByName("kaptReleaseKotlin")
+        def dokkaHtmlPartialTask = project.tasks.findByName("dokkaHtmlPartial")
+
+        if (dokkaHtmlPartialTask && kaptDebugTask && kaptReleaseTask) {
+            dokkaHtmlPartialTask.dependsOn(kaptDebugTask, kaptReleaseTask)
+        }
+    }
+}
