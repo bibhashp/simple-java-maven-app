@@ -49,3 +49,37 @@ with zipfile.ZipFile(zip_filename, 'w') as zipf:
             zipf.write(file_path, os.path.join(branch1, rel_path))
 
 print(f"Contents of {source} have been zipped into {zip_filename} under the {branch1} folder.")
+
+
+
+
+
+
+import os
+import zipfile
+
+# Define the paths
+base_dir = "/root/dev/home"
+original_folder_name = "html"  # Replace with your folder name
+renamed_folder_name = "develop"
+zip_file = os.path.join(base_dir, "develop.zip")
+
+original_folder = os.path.join(base_dir, original_folder_name)
+renamed_folder = os.path.join(base_dir, renamed_folder_name)
+
+# Rename the original folder to the new folder name
+os.rename(original_folder, renamed_folder)
+
+# Create a zip file from the renamed folder
+with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED) as z:
+    for root, dirs, files in os.walk(renamed_folder):
+        for file in files:
+            full_path = os.path.join(root, file)
+            relative_path = os.path.relpath(full_path, base_dir)
+            z.write(full_path, relative_path)
+
+# Rename the folder back to its original name
+os.rename(renamed_folder, original_folder)
+
+print(f"Contents of {original_folder} have been zipped into {zip_file}")
+
