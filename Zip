@@ -20,3 +20,32 @@ with zipfile.ZipFile(zip_filename, 'w') as zipf:
             zipf.write(file_path, os.path.join(branch1, os.path.relpath(file_path, source)))
 
 print(f"Contents of {source} have been zipped into {zip_filename} under the {branch1} folder.")
+
+
+
+
+import os
+import zipfile
+
+# Define the source directory and branch
+source = "/root/home/user/tmp/html"
+branch1 = "develop"
+
+# Define the name of the zip file
+zip_filename = "html_contents.zip"
+
+# Create a zip file
+with zipfile.ZipFile(zip_filename, 'w') as zipf:
+    # Iterate through all the files in the source directory
+    for foldername, subfolders, filenames in os.walk(source):
+        for filename in filenames:
+            # Create the full file path
+            file_path = os.path.join(foldername, filename)
+            
+            # Calculate the relative path for the file inside the zip
+            rel_path = os.path.relpath(file_path, source)
+            
+            # Write the file to the zip file under branch1
+            zipf.write(file_path, os.path.join(branch1, rel_path))
+
+print(f"Contents of {source} have been zipped into {zip_filename} under the {branch1} folder.")
