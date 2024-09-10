@@ -4,29 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCM Projects</title>
-    <script>
-        function updateTable() {
-            var selectedKey = document.getElementById("scmSelect").value;
-            var data = JSON.parse('{{ report_input|safe }}');
-            var table = document.getElementById("dataTable");
-
-            // Clear table
-            table.innerHTML = "";
-
-            // If a key is selected, populate the table
-            if (selectedKey !== "") {
-                var repos = data[selectedKey];
-
-                repos.forEach(function(repo) {
-                    var row = table.insertRow();
-                    var cell1 = row.insertCell(0);
-                    var cell2 = row.insertCell(1);
-                    cell1.innerHTML = selectedKey;
-                    cell2.innerHTML = repo;
-                });
-            }
-        }
-    </script>
 </head>
 <body>
     <h1>Select SCM Project</h1>
@@ -50,5 +27,30 @@
         <tbody id="dataTable">
         </tbody>
     </table>
+
+    <!-- JavaScript code placed after the elements -->
+    <script>
+        function updateTable() {
+            var selectedKey = document.getElementById("scmSelect").value;
+            var data = JSON.parse('{{ report_input|safe }}');
+            var table = document.getElementById("dataTable");
+
+            // Clear table
+            table.innerHTML = "";
+
+            // If a key is selected, populate the table
+            if (selectedKey !== "") {
+                var repos = data[selectedKey];
+
+                repos.forEach(function(repo) {
+                    var row = table.insertRow();
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    cell1.innerHTML = selectedKey;
+                    cell2.innerHTML = repo;
+                });
+            }
+        }
+    </script>
 </body>
 </html>
