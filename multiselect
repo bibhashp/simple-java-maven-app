@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <title>Multi Select JS</title>
+    <!-- Include the Multi Select stylesheet -->
+    <link href="{% static 'MultiSelect.css' %}" rel="stylesheet" type="text/css">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-size: 16px;
+        }
+        body {
+            margin: 0;
+            padding: 15px;
+            background-color: #f3f4f7;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            margin: 100px auto;
+            padding: 40px 40px 60px;
+            max-width: 500px;
+            width: 100%;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form h1 {
+            margin: 10px 0 5px;
+            font-size: 24px;
+            font-weight: 500;
+            color: #474b50;
+        }
+        form label {
+            margin: 25px 0 10px;
+            font-weight: 500;
+            color: #474b50;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <label for="dynamic">Dynamic Select</label>
+        <select id="dynamic" name="dynamic">
+            {% for option in options %}
+                <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>
+                    {% if option.html %}
+                        {{ option.html|safe }}
+                    {% else %}
+                        {{ option.text }}
+                    {% endif %}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+    <!-- Include the Multi Select JS class -->
+    <script src="{% static 'MultiSelect.js' %}"></script>
+    <script>
+        // Initialize the Multi Select dropdown
+        new MultiSelect('#dynamic', {
+            data: [
+                {% for option in options %}
+                    {
+                        value: '{{ option.value }}',
+                        {% if option.html %}
+                            html: '{{ option.html|escapejs }}'
+                        {% else %}
+                            text: '{{ option.text }}'
+                        {% endif %}
+                        {% if option.selected %}, selected: true{% endif %}
+                    },
+                {% endfor %}
+            ],
+            placeholder: 'Select an option',
+            search: true,
+            selectAll: true,
+            listAll: false,
+            max: 2,
+            onChange: function(value, text, element) {
+                console.log('Change:', value, text, element);
+            },
+            onSelect: function(value, text, element) {
+                console.log('Selected:', value, text, element);
+            },
+            onUnselect: function(value, text, element) {
+                console.log('Unselected:', value, text, element);
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+    options = [
+        {'value': 'opt1', 'text': 'Option 1'},
+        {'value': 'opt2', 'html': '<strong>Option 2 with HTML!</strong>'},
+        {'value': 'opt3', 'text': 'Option 3', 'selected': True},
+        {'value': 'opt4', 'text': 'Option 4'},
+        {'value': 'opt5', 'text': 'Option 5'}
+    ]
+    
+    # Render the template with the options data
+    return render(request, 'multi_select_template.html', {'options': options})
